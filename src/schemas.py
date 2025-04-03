@@ -23,12 +23,12 @@ class ContactBase(BaseModel):
         additional (str): Additional information about the contact.
     """
 
-    first_name: str = Field(max_length=50)
-    last_name: str = Field(max_length=50)
-    email: str = Field(max_length=50)
-    phone: str = Field(max_length=50)
-    birth_date: datetime
-    additional: str = Field(max_length=250)
+    first_name: Optional[str] = Field(default=None, max_length=50)
+    last_name: Optional[str] = Field(default=None, max_length=50)
+    email: Optional[str] = Field(default=None, max_length=50)
+    phone: Optional[str] = Field(default=None, max_length=50)
+    birth_date: Optional[datetime] = None
+    additional: Optional[str] = Field(default=None, max_length=250)
 
 
 class ContactResponse(ContactBase):

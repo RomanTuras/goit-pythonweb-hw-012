@@ -12,7 +12,7 @@ from starlette.responses import JSONResponse
 
 app = FastAPI()
 
-origins = ["http://localhost:8000"]
+origins = ["http://127.0.0.1:80, http://127.0.0.1:5000"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -49,4 +49,4 @@ app.include_router(users.router, prefix="/api/v1")
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)

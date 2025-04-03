@@ -102,7 +102,8 @@ class ContactRepository:
         self.db.add(contact)
         await self.db.commit()
         await self.db.refresh(contact)
-        return await self.get_contact_by_id(contact.id, user)
+        return contact
+        # return await self.get_contact_by_id(contact.id, user)
 
     async def update_contact(
         self, contact_id: int, body: ContactBase, user: User

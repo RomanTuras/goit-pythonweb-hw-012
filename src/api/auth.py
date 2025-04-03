@@ -3,6 +3,7 @@ Authentication Routes Module
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Request
+from pydantic import validate_email, EmailStr, TypeAdapter
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.security import OAuth2PasswordRequestForm
 from src.schemas import UserCreate, Token, User, RequestEmail
@@ -102,15 +103,18 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
         dict: A message indicating email confirmation status.
     """
     email = await get_email_from_token(token)
+    email_adapter = TypeAdapter(EmailStr)
+    valid_email = email_adapter.validate_python(email)
+
     user_service = UserService(db)
-    user = await user_service.get_user_by_email(email)
+    user = await user_service.get_user_by_email(valid_email)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error"
         )
     if user.confirmed:
         return {"message": "Email already confirmed"}
-    await user_service.confirmed_email(email)
+    await user_service.confirmed_email(valid_email)
     return {"message": "Email confirmed successfully"}
 
 

@@ -35,6 +35,7 @@ async def me(request: Request, user: User = Depends(get_current_user)):
     Returns:
         User: The authenticated user's information.
     """
+
     return user
 
 

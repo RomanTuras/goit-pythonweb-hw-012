@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     MAIL_PORT: Optional[int] = None
     MAIL_SSL_TLS: Optional[bool] = None
     DB_URL: Optional[str] = None
+    REDIS_URL: Optional[str] = None
+    DATABASE_URL: Optional[str] = None
     JWT_SECRET: Optional[str] = None
     JWT_ALGORITHM: Optional[str] = None
     JWT_EXPIRATION_SECONDS: Optional[int] = None

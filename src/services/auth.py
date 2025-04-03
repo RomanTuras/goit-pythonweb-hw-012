@@ -2,7 +2,7 @@
 Module for authentication and authorization services.
 Provides password hashing, JWT token generation, and user authentication.
 """
-
+import pickle
 from datetime import datetime, timedelta, UTC
 from typing import Optional
 
@@ -15,6 +15,9 @@ from jose import JWTError, jwt
 from src.database.db import get_db
 from src.conf.config import settings
 from src.services.users import UserService
+
+import redis
+import json
 
 
 class Hash:
@@ -109,11 +112,22 @@ async def get_current_user(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
+
     user_service = UserService(db)
-    user = await user_service.get_user_by_username(username)
+    r = redis.from_url(settings.REDIS_URL)
+    user = r.get(username)
+    if user is None:
+        user = await user_service.get_user_by_username(username)
+        if user is not None:
+            r.set(username, pickle.dumps(user))
+            r.expire(username, 3600)
+            print("---> Getting User from DB")
+            return user
+
     if user is None:
         raise credentials_exception
-    return user
+    print("---> Getting User from REDIS")
+    return pickle.loads(user)
 
 
 async def get_email_from_token(token: str):
