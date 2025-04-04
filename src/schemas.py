@@ -6,6 +6,8 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 
+from src.database.models import UserRole
+
 
 class ContactBase(BaseModel):
     """
@@ -74,12 +76,14 @@ class User(BaseModel):
         username (str): The username of the user.
         email (EmailStr): The email address of the user.
         avatar (str): The URL or path to the user's avatar.
+        role (UserRole): The user role.
     """
 
     id: int
     username: str
     email: EmailStr
     avatar: str
+    role: UserRole
 
     model_config = ConfigDict(from_attributes=True, str_strip_whitespace=True)
 
@@ -94,6 +98,7 @@ class UserCreate(BaseModel):
         username (str): The username for the new user.
         email (EmailStr): The email address for the new user.
         password (str): The password for the new user.
+        role (UserRole): The user role.
     """
 
     username: str

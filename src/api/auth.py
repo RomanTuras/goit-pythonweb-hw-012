@@ -15,7 +15,6 @@ from src.database.db import get_db
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-# Register the User
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
 async def register_user(
     user_data: UserCreate,
@@ -58,7 +57,6 @@ async def register_user(
     return new_user
 
 
-# User Login
 @router.post("/login", response_model=Token)
 async def login_user(
     form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)

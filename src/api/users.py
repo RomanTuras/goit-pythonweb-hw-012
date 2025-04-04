@@ -2,13 +2,13 @@
 Users router module
 """
 
-from fastapi import APIRouter, Depends, Request, File, UploadFile
+from fastapi import APIRouter, Depends, Request, File, UploadFile, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.conf.config import settings
 from src.database.db import get_db
 from src.schemas import User
-from src.services.auth import get_current_user
+from src.services.auth import get_current_user, get_current_admin_user
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -65,4 +65,30 @@ async def update_avatar_user(
     user_service = UserService(db)
     user = await user_service.update_avatar_url(user.email, avatar_url)
 
+    return user
+
+
+@router.delete("/{user_id}", response_model=User)
+async def delete_user_by_id(
+    user_id: int,
+    _: User = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+        Delete a user by ID.
+
+        Args:
+            user_id: The ID of the user to remove.
+            db: Database session.
+            _: The currently authenticated user.
+
+        Returns:
+            The removed user record if found, otherwise raises an HTTPException.
+        """
+    user_service = UserService(db)
+    user = await user_service.delete_user_by_id(user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     return user

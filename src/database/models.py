@@ -3,8 +3,10 @@ Database Models Module
 """
 
 from datetime import datetime
+from enum import Enum
 
-from sqlalchemy import Integer, String, func, ForeignKey, Column, Boolean
+from sqlalchemy import Integer, String, func, ForeignKey, Column, Boolean, Enum as SqlEnum
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import mapped_column, Mapped, DeclarativeBase, relationship
 from sqlalchemy.sql.sqltypes import DateTime
 
@@ -59,6 +61,17 @@ class Contact(Base):
     user = relationship("User", backref="contacts")
 
 
+class UserRole(str, Enum):
+    """Enumeration of user roles.
+
+        Attributes:
+            USER (str): Regular user role.
+            ADMIN (str): Administrator role.
+        """
+    USER = "user"
+    ADMIN = "admin"
+
+
 class User(Base):
     """
     User model for storing user information.
@@ -73,6 +86,7 @@ class User(Base):
         created_at (datetime): The timestamp when the user account was created.
         avatar (str): The URL or path to the user's avatar image (optional).
         confirmed (bool): Whether the user’s email is confirmed (default is False).
+        role (UserRole): user role.
     """
 
     __tablename__ = "users"
@@ -83,3 +97,4 @@ class User(Base):
     created_at = Column(DateTime, default=func.now())
     avatar = Column(String(255), nullable=True)
     confirmed = Column(Boolean, default=False)
+    role = Column(String(10), default="user")

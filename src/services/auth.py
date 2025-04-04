@@ -14,10 +14,10 @@ from jose import JWTError, jwt
 
 from src.database.db import get_db
 from src.conf.config import settings
+from src.database.models import User, UserRole
 from src.services.users import UserService
 
 import redis
-import json
 
 
 class Hash:
@@ -56,7 +56,6 @@ class Hash:
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
-# define a function to generate a new access token
 async def create_access_token(data: dict, expires_delta: Optional[int] = None):
     """
     Generate a JWT access token.
@@ -128,6 +127,23 @@ async def get_current_user(
         raise credentials_exception
     print("---> Getting User from REDIS")
     return pickle.loads(user)
+
+
+def get_current_admin_user(current_user: User = Depends(get_current_user)):
+    """Gets the current authenticated admin user.
+
+        Args:
+            current_user (User): The currently authenticated user.
+
+        Returns:
+            User: The authenticated admin user.
+
+        Raises:
+            HTTPException: If the user does not have admin privileges.
+        """
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Insufficient access rights")
+    return current_user
 
 
 async def get_email_from_token(token: str):

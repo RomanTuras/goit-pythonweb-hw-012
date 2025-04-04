@@ -116,3 +116,15 @@ class UserService:
             The updated user object.
         """
         return await self.repository.update_avatar_url(email, url)
+
+    async def delete_user_by_id(self, user_id: int):
+        """
+        Delete a user by their ID.
+
+        Args:
+            user_id (int): The ID of the user to delete.
+
+        Returns:
+            The user object corresponding to the given ID.
+        """
+        return await self.repository.delete_user_by_id(user_id)

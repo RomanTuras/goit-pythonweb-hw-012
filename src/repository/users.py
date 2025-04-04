@@ -5,7 +5,7 @@ This module provides a repository for managing user-related database operations.
 """
 
 from pydantic import EmailStr
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models import User
@@ -115,4 +115,21 @@ class UserRepository:
         user.avatar = url
         await self.db.commit()
         await self.db.refresh(user)
+        return user
+
+    async def delete_user_by_id(self, user_id: int) -> User | None:
+        """
+        Delete a user by their ID.
+
+        Args:
+            user_id (int): The ID of the user.
+
+        Returns:
+            User | None: The user if deleted, else None.
+        """
+        user = await self.get_user_by_id(user_id=user_id)
+        if user:
+            await self.db.delete(user)
+            await self.db.commit()
+
         return user
