@@ -42,15 +42,15 @@ async def me(request: Request, user: User = Depends(get_current_user)):
 @router.patch("/avatar", response_model=User)
 async def update_avatar_user(
     file: UploadFile = File(),
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Update the avatar of the currently authenticated user.
+    Update the avatar of the currently authenticated user with admin role.
 
     Args:
         file (UploadFile): The uploaded avatar file.
-        user (User): The currently authenticated user.
+        user (User): The currently authenticated user with admin role.
         db (AsyncSession): The database session.
 
     Returns:
