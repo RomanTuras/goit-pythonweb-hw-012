@@ -5,8 +5,14 @@ Database Models Module
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import Integer, String, func, ForeignKey, Column, Boolean, Enum as SqlEnum
-from sqlalchemy.dialects import postgresql
+from sqlalchemy import (
+    Integer,
+    String,
+    func,
+    ForeignKey,
+    Column,
+    Boolean,
+)
 from sqlalchemy.orm import mapped_column, Mapped, DeclarativeBase, relationship
 from sqlalchemy.sql.sqltypes import DateTime
 
@@ -64,10 +70,11 @@ class Contact(Base):
 class UserRole(str, Enum):
     """Enumeration of user roles.
 
-        Attributes:
-            USER (str): Regular user role.
-            ADMIN (str): Administrator role.
-        """
+    Attributes:
+        USER (str): Regular user role.
+        ADMIN (str): Administrator role.
+    """
+
     USER = "user"
     ADMIN = "admin"
 

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,6 +36,7 @@ async def test_get_user_by_id(user_repository, mock_session):
     assert user.id == 1
     assert user.username == "Luke"
 
+
 @pytest.mark.asyncio
 async def test_get_user_by_username(user_repository, mock_session):
     # Setup mock
@@ -52,12 +51,12 @@ async def test_get_user_by_username(user_repository, mock_session):
     assert user.id == 1
     assert user.username == "Luke"
 
+
 # get_user_by_username
 # get_user_by_email
 # create_user
 # confirmed_email
 # update_avatar_url
-
 
 
 # @pytest.mark.asyncio

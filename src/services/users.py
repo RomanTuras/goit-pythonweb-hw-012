@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from libgravatar import Gravatar
 
+from src.database.models import User
 from src.repository.users import UserRepository
 from src.schemas import UserCreate
 
@@ -128,3 +129,8 @@ class UserService:
             The user object corresponding to the given ID.
         """
         return await self.repository.delete_user_by_id(user_id)
+
+    async def change_password(self, email: EmailStr, new_password: str) -> User | None:
+        return await self.repository.change_password(
+            email=email, new_password=new_password
+        )

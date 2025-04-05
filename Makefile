@@ -2,6 +2,7 @@
 	lint \
 	mypy \
 	env \
+	docs \
 	help
 
 env: ## Create environment
@@ -16,6 +17,8 @@ lint: ## Run linter
 mypy: ## Run mypy
 	poetry run mypy ./
 
+docs: ## Run make html
+	cd docs && make html
 
 # Just help
 help: ## Display help screen

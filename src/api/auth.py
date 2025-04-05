@@ -3,14 +3,20 @@ Authentication Routes Module
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Request
-from pydantic import validate_email, EmailStr, TypeAdapter
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.security import OAuth2PasswordRequestForm
 from src.schemas import UserCreate, Token, User, RequestEmail
-from src.services.auth import create_access_token, Hash, get_email_from_token
+from src.services.auth import (
+    create_access_token,
+    get_email_from_token,
+    create_email_token,
+)
 from src.services.email_service import send_email
 from src.services.users import UserService
 from src.database.db import get_db
+from src.services.utils.HashHelper import HashHelper
+from src.services.utils.email_template_utils import EmailTemplatesUtils
+from src.services.utils.str_to_email_str import str_to_email_str
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -49,11 +55,19 @@ async def register_user(
             status_code=status.HTTP_409_CONFLICT,
             detail="User name already exists",
         )
-    user_data.password = Hash().get_password_hash(user_data.password)
+    user_data.password = HashHelper().get_password_hash(user_data.password)
     new_user = await user_service.create_user(user_data)
-    background_tasks.add_task(
-        send_email, new_user.email, new_user.username, request.base_url
+
+    token_verification = create_email_token({"sub": new_user.email})
+    email_template_utils = EmailTemplatesUtils()
+    email_content = email_template_utils.get_verivy_email_content(
+        username=new_user.username, host=request.base_url, token=token_verification
     )
+
+    background_tasks.add_task(
+        send_email, email=new_user.email, email_content=email_content
+    )
+
     return new_user
 
 
@@ -73,7 +87,9 @@ async def login_user(
     """
     user_service = UserService(db)
     user = await user_service.get_user_by_username(form_data.username)
-    if not user or not Hash().verify_password(form_data.password, user.hashed_password):
+    if not user or not HashHelper().verify_password(
+        form_data.password, user.hashed_password
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect login or password",
@@ -101,8 +117,7 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
         dict: A message indicating email confirmation status.
     """
     email = await get_email_from_token(token)
-    email_adapter = TypeAdapter(EmailStr)
-    valid_email = email_adapter.validate_python(email)
+    valid_email = str_to_email_str(email)
 
     user_service = UserService(db)
     user = await user_service.get_user_by_email(valid_email)
@@ -141,7 +156,13 @@ async def request_email(
     if user.confirmed:
         return {"message": "Email already confirmed"}
     if user:
+        token_verification = create_email_token({"sub": user.email})
+        email_template_utils = EmailTemplatesUtils()
+        email_content = email_template_utils.get_verivy_email_content(
+            username=user.username, host=request.base_url, token=token_verification
+        )
+
         background_tasks.add_task(
-            send_email, user.email, user.username, request.base_url
+            send_email, email=user.email, email_content=email_content
         )
     return {"message": "Check your email for confirm registration"}

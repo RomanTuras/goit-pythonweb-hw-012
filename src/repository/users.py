@@ -5,11 +5,12 @@ This module provides a repository for managing user-related database operations.
 """
 
 from pydantic import EmailStr
-from sqlalchemy import select, delete
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models import User
 from src.schemas import UserCreate
+from src.services.utils.HashHelper import HashHelper
 
 
 class UserRepository:
@@ -36,8 +37,8 @@ class UserRepository:
         Returns:
             User | None: The user if found, else None.
         """
-        stmt = select(User).filter_by(id=user_id)
-        user = await self.db.execute(stmt)
+        query = select(User).filter_by(id=user_id)
+        user = await self.db.execute(query)
         return user.scalar_one_or_none()
 
     async def get_user_by_username(self, username: str) -> User | None:
@@ -50,8 +51,8 @@ class UserRepository:
         Returns:
             User | None: The user if found, else None.
         """
-        stmt = select(User).filter_by(username=username)
-        user = await self.db.execute(stmt)
+        query = select(User).filter_by(username=username)
+        user = await self.db.execute(query)
         return user.scalar_one_or_none()
 
     async def get_user_by_email(self, email: EmailStr) -> User | None:
@@ -64,8 +65,8 @@ class UserRepository:
         Returns:
             User | None: The user if found, else None.
         """
-        stmt = select(User).filter_by(email=email)
-        user = await self.db.execute(stmt)
+        query = select(User).filter_by(email=email)
+        user = await self.db.execute(query)
         return user.scalar_one_or_none()
 
     async def create_user(self, body: UserCreate, avatar: str = None) -> User:
@@ -132,4 +133,13 @@ class UserRepository:
             await self.db.delete(user)
             await self.db.commit()
 
+        return user
+
+    async def change_password(self, email: EmailStr, new_password: str) -> User | None:
+        user = await self.get_user_by_email(email)
+
+        if user:
+            user.hashed_password = HashHelper().get_password_hash(new_password)
+            await self.db.commit()
+            await self.db.refresh(user)
         return user

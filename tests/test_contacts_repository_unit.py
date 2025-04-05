@@ -47,7 +47,9 @@ async def test_get_contacts(contact_repository, mock_session, user):
 async def test_get_contact_by_id(contact_repository, mock_session, user):
     # Setup mock
     mock_result = MagicMock()
-    mock_result.scalar_one_or_none.return_value = Contact(id=1, first_name="Luke", user=user)
+    mock_result.scalar_one_or_none.return_value = Contact(
+        id=1, first_name="Luke", user=user
+    )
     mock_session.execute = AsyncMock(return_value=mock_result)
 
     # Call method
@@ -66,7 +68,7 @@ async def test_create_contact(contact_repository, mock_session, user):
         last_name="Skywalker",
         phone="40358974",
         birth_date=datetime(day=25, month=2, year=1999),
-        additional=""
+        additional="",
     )
 
     # Call method
@@ -82,16 +84,16 @@ async def test_create_contact(contact_repository, mock_session, user):
 @pytest.mark.asyncio
 async def test_update_contact(contact_repository, mock_session, user):
     # Setup
-    contact_data = ContactBase(
-        last_name="Skywalker"
-    )
+    contact_data = ContactBase(last_name="Skywalker")
     existing_contact = Contact(id=1, first_name="Luke", last_name="Oldman", user=user)
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = existing_contact
     mock_session.execute = AsyncMock(return_value=mock_result)
 
     # Call method
-    result = await contact_repository.update_contact(contact_id=1, body=contact_data, user=user)
+    result = await contact_repository.update_contact(
+        contact_id=1, body=contact_data, user=user
+    )
 
     # Assertions
     assert result is not None
@@ -99,6 +101,7 @@ async def test_update_contact(contact_repository, mock_session, user):
     assert result.last_name == "Skywalker"
     mock_session.commit.assert_awaited_once()
     mock_session.refresh.assert_awaited_once_with(existing_contact)
+
 
 @pytest.mark.asyncio
 async def test_remove_contact(contact_repository, mock_session, user):
@@ -116,4 +119,3 @@ async def test_remove_contact(contact_repository, mock_session, user):
     assert result.last_name == "Oldman"
     mock_session.delete.assert_awaited_once_with(existing_contact)
     mock_session.commit.assert_awaited_once()
-

@@ -134,3 +134,16 @@ class RequestEmail(BaseModel):
     """
 
     email: EmailStr
+
+
+class ResetPassword(BaseModel):
+    """
+    Model for representing a request to reset password.
+
+    Attributes:
+        token (Str): The token.
+        new_password (Str): The new user password.
+    """
+
+    token: str
+    new_password: str
