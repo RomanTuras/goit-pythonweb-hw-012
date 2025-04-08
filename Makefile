@@ -3,6 +3,8 @@
 	mypy \
 	env \
 	docs \
+	test \
+	coverage \
 	help
 
 env: ## Create environment
@@ -19,6 +21,13 @@ mypy: ## Run mypy
 
 docs: ## Run make html
 	cd docs && make html
+
+test: ## Run test <filename>
+	poetry run pytest -v $(filter-out $@,$(MAKECMDGOALS)) -s
+
+coverage: ## Make tests coverage
+	poetry run pytest --cov=src tests/
+
 
 # Just help
 help: ## Display help screen

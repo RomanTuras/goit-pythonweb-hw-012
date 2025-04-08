@@ -15,11 +15,13 @@ class Settings(BaseSettings):
     MAIL_PORT: Optional[int] = None
     MAIL_SSL_TLS: Optional[bool] = None
     DB_URL: Optional[str] = None
+    TEST_DB_URL: Optional[str] = None
     REDIS_URL: Optional[str] = None
     DATABASE_URL: Optional[str] = None
     JWT_SECRET: Optional[str] = None
     JWT_ALGORITHM: Optional[str] = None
-    JWT_EXPIRATION_SECONDS: Optional[int] = None
+    JWT_ACCESS_EXPIRATION_MINUTES: Optional[int] = None
+    JWT_REFRESH_EXPIRATION_MINUTES: Optional[int] = None
     CLOUDINARY_NAME: Optional[str] = None
     CLOUDINARY_API_KEY: Optional[int] = None
     CLOUDINARY_API_SECRET: Optional[str] = None

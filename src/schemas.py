@@ -108,17 +108,16 @@ class UserCreate(BaseModel):
 
 class Token(BaseModel):
     """
-    Model for representing an authentication token.
-
-    This class is used to represent the access token and its type (e.g., Bearer) that is returned
-    after successful authentication.
+    Model for representing an authentication tokens.
 
     Attributes:
         access_token (str): The actual access token.
+        refresh_token (str): The actual refresh token.
         token_type (str): The type of the token (e.g., "bearer").
     """
 
     access_token: str
+    refresh_token: str
     token_type: str
 
 
@@ -147,3 +146,14 @@ class ResetPassword(BaseModel):
 
     token: str
     new_password: str
+
+
+class TokenRefreshRequest(BaseModel):
+    """
+    Model for representing a refresh token.
+
+    Attributes:
+        refresh_token (Str): The actual refresh token.
+    """
+
+    refresh_token: str

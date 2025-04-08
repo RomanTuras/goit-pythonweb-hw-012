@@ -40,7 +40,7 @@ limiter = Limiter(key_func=get_remote_address)
 @router.get(
     "/me", response_model=User, description="No more than 5 requests per minute"
 )
-@limiter.limit("2/minute")
+@limiter.limit("50/minute")
 async def me(request: Request, user: User = Depends(get_current_user)):
     """
     Retrieve the currently authenticated user.
@@ -157,7 +157,7 @@ async def request_reset_password(
 async def get_reset_password_form(token: str, db: AsyncSession = Depends(get_db)):
     """
     Show form for reset a user  password if confirmed a user's email address using a verification token.
-    
+
     Args:
         token: The email verification token.
         db (AsyncSession, optional): The database session dependency.

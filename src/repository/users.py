@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models import User
 from src.schemas import UserCreate
-from src.services.utils.HashHelper import HashHelper
+from src.services.utils.hash_helper import HashHelper
 
 
 class UserRepository:
